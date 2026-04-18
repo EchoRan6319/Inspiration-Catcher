@@ -1,16 +1,14 @@
-<script setup lang="ts">
-import { EMOTION_OPTIONS, Inspiration } from '../types'
+<script setup>
+import { EMOTION_OPTIONS } from '../types'
 
-interface Props {
-  modelValue: Inspiration['emotion']
-}
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: 'neutral'
+  }
+})
 
-interface Emits {
-  (e: 'update:modelValue', value: Inspiration['emotion']): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const emit = defineEmits(['update:modelValue'])
 </script>
 
 <template>

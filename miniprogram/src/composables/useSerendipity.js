@@ -1,23 +1,21 @@
-
 import { ref, computed } from 'vue'
-import { Inspiration } from '../types'
 import { getRandomItem, shuffleArray } from '../utils/helpers'
 import { useInspiration } from './useInspiration'
 
 export function useSerendipity() {
   const { inspirations } = useInspiration()
-  const currentInspiration = ref&lt;Inspiration | null&gt;(null)
-  const history = ref&lt;Inspiration[]&gt;([])
+  const currentInspiration = ref(null)
+  const history = ref([])
   const isAnimating = ref(false)
 
-  const hasInspirations = computed(() =&gt; inspirations.value.length &gt; 0)
-  const canGoBack = computed(() =&gt; history.value.length &gt; 0)
+  const hasInspirations = computed(() => inspirations.value.length > 0)
+  const canGoBack = computed(() => history.value.length > 0)
 
-  function getRandomInspiration(): Inspiration | null {
+  function getRandomInspiration() {
     if (inspirations.value.length === 0) return null
 
     const availableInspirations = inspirations.value.filter(
-      (insp) =&gt; !currentInspiration.value || insp.id !== currentInspiration.value.id
+      (insp) => !currentInspiration.value || insp.id !== currentInspiration.value.id
     )
 
     if (availableInspirations.length === 0) {
@@ -36,7 +34,7 @@ export function useSerendipity() {
       history.value.push(currentInspiration.value)
     }
 
-    setTimeout(() =&gt; {
+    setTimeout(() => {
       currentInspiration.value = getRandomInspiration()
       isAnimating.value = false
     }, 300)
@@ -47,7 +45,7 @@ export function useSerendipity() {
 
     isAnimating.value = true
 
-    setTimeout(() =&gt; {
+    setTimeout(() => {
       if (currentInspiration.value) {
         inspirations.value.unshift(currentInspiration.value)
       }
@@ -56,7 +54,7 @@ export function useSerendipity() {
     }, 300)
   }
 
-  function getShuffledInspirations(count: number = 5): Inspiration[] {
+  function getShuffledInspirations(count = 5) {
     return shuffleArray(inspirations.value).slice(0, count)
   }
 

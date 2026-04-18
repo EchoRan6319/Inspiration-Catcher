@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue'
 import Taro from '@tarojs/taro'
 import InspirationCard from '@/components/InspirationCard.vue'
@@ -19,7 +19,7 @@ function handleLoadDemo() {
 }
 
 const searchQuery = ref('')
-const selectedTag = ref(null as string | null)
+const selectedTag = ref(null)
 
 const filteredInspirations = computed(() => {
   let result = inspirations.value
@@ -29,7 +29,7 @@ const filteredInspirations = computed(() => {
   }
 
   if (selectedTag.value) {
-    result = result.filter((insp) => insp.tags.includes(selectedTag.value!))
+    result = result.filter((insp) => insp.tags.includes(selectedTag.value))
   }
 
   return result

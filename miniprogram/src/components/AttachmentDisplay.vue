@@ -1,15 +1,16 @@
-<script setup lang="ts">
-import { Attachment } from '../types'
+<script setup>
+const props = defineProps({
+  attachments: {
+    type: Array,
+    default: () => []
+  },
+  onDelete: {
+    type: Function,
+    default: null
+  }
+})
 
-interface Props {
-  attachments: Attachment[]
-  onDelete?: (attachmentId: string) => void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<{
-  delete: [attachmentId: string]
-}>()
+const emit = defineEmits(['delete'])
 </script>
 
 <template>

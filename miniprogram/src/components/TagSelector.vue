@@ -1,25 +1,26 @@
-<script setup lang="ts">
-import { ref, watch } from 'vue'
+<script setup>
+import { ref } from 'vue'
 
-interface Props {
-  modelValue: string[]
-  availableTags?: string[]
-  placeholder?: string
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: string[]): void
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  availableTags: () => [],
-  placeholder: '添加标签...',
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    default: () => []
+  },
+  availableTags: {
+    type: Array,
+    default: () => []
+  },
+  placeholder: {
+    type: String,
+    default: '添加标签...'
+  }
 })
-const emit = defineEmits<Emits>()
+
+const emit = defineEmits(['update:modelValue'])
 
 const inputValue = ref('')
 
-function addTag(tag: string) {
+function addTag(tag) {
   const trimmed = tag.trim()
   if (trimmed && !props.modelValue.includes(trimmed)) {
     emit('update:modelValue', [...props.modelValue, trimmed])
@@ -27,11 +28,11 @@ function addTag(tag: string) {
   inputValue.value = ''
 }
 
-function removeTag(tag: string) {
+function removeTag(tag) {
   emit('update:modelValue', props.modelValue.filter((t) => t !== tag))
 }
 
-function handleKeydown(event: KeyboardEvent) {
+function handleKeydown(event) {
   if (event.key === 'Enter' || event.key === ',') {
     event.preventDefault()
     addTag(inputValue.value)

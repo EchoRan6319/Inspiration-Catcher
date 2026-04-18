@@ -1,14 +1,12 @@
-
 import { ref, watch, onMounted, computed } from 'vue'
 import Taro from '@tarojs/taro'
 
-type Theme = 'light' | 'dark'
 const THEME_KEY = 'theme'
 
 export function useTheme() {
-  const theme = ref&lt;Theme&gt;('light')
+  const theme = ref('light')
 
-  const getPreferredTheme = (): Theme =&gt; {
+  const getPreferredTheme = () => {
     try {
       const saved = Taro.getStorageSync(THEME_KEY)
       if (saved === 'light' || saved === 'dark') {
@@ -20,7 +18,7 @@ export function useTheme() {
     return 'light'
   }
 
-  const applyTheme = (t: Theme) =&gt; {
+  const applyTheme = (t) => {
     try {
       Taro.setStorageSync(THEME_KEY, t)
     } catch (error) {
@@ -28,22 +26,22 @@ export function useTheme() {
     }
   }
 
-  const toggleTheme = () =&gt; {
+  const toggleTheme = () => {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
 
-  onMounted(() =&gt; {
+  onMounted(() => {
     theme.value = getPreferredTheme()
     applyTheme(theme.value)
   })
 
-  watch(theme, (newTheme) =&gt; {
+  watch(theme, (newTheme) => {
     applyTheme(newTheme)
   })
 
   return {
     theme,
     toggleTheme,
-    isDark: computed(() =&gt; theme.value === 'dark'),
+    isDark: computed(() => theme.value === 'dark'),
   }
 }

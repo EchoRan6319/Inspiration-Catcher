@@ -1,13 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import Taro from '@tarojs/taro'
 
-interface Props {
-  onUpload?: (dataUrl: string, fileName: string, type: 'image' | 'audio') => void
-  accept?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  accept: 'image/*,audio/*',
+const props = defineProps({
+  onUpload: {
+    type: Function,
+    default: null
+  },
+  accept: {
+    type: String,
+    default: 'image/*,audio/*'
+  }
 })
 
 function handleChooseImage() {

@@ -1,6 +1,4 @@
-
 import { computed } from 'vue'
-import { Inspiration, Supplement, Attachment } from '../types'
 import { generateId, getRandomItem } from '../utils/helpers'
 import { COLOR_OPTIONS } from '../types'
 import { useStorage } from './useStorage'
@@ -8,7 +6,7 @@ import { demoInspirations } from '../utils/demoData'
 
 const colorOptions = [...COLOR_OPTIONS]
 
-function createAttachment(dataUrl: string, fileName: string, type: 'image' | 'audio'): Attachment {
+function createAttachment(dataUrl, fileName, type) {
   return {
     id: generateId(),
     type,
@@ -21,25 +19,25 @@ function createAttachment(dataUrl: string, fileName: string, type: 'image' | 'au
 export function useInspiration() {
   const { inspirations } = useStorage()
 
-  const allTags = computed(() =&gt; {
-    const tags = new Set&lt;string&gt;()
-    inspirations.value.forEach((insp) =&gt; {
-      insp.tags.forEach((tag) =&gt; tags.add(tag))
+  const allTags = computed(() => {
+    const tags = new Set()
+    inspirations.value.forEach((insp) => {
+      insp.tags.forEach((tag) => tags.add(tag))
     })
     return Array.from(tags)
   })
 
-  function getInspirationById(id: string): Inspiration | undefined {
-    return inspirations.value.find((insp) =&gt; insp.id === id)
+  function getInspirationById(id) {
+    return inspirations.value.find((insp) => insp.id === id)
   }
 
   function createInspiration(
-    content: string,
-    tags: string[] = [],
-    emotion: Inspiration['emotion'] = 'neutral'
-  ): Inspiration {
+    content,
+    tags = [],
+    emotion = 'neutral'
+  ) {
     const now = new Date()
-    const inspiration: Inspiration = {
+    const inspiration = {
       id: generateId(),
       content,
       tags,
@@ -54,8 +52,8 @@ export function useInspiration() {
     return inspiration
   }
 
-  function updateInspiration(id: string, updates: Partial&lt;Omit&lt;Inspiration, 'id' | 'createdAt'&gt;&gt;) {
-    const index = inspirations.value.findIndex((insp) =&gt; insp.id === id)
+  function updateInspiration(id, updates) {
+    const index = inspirations.value.findIndex((insp) => insp.id === id)
     if (index !== -1) {
       inspirations.value[index] = {
         ...inspirations.value[index],
@@ -65,17 +63,17 @@ export function useInspiration() {
     }
   }
 
-  function deleteInspiration(id: string) {
-    const index = inspirations.value.findIndex((insp) =&gt; insp.id === id)
+  function deleteInspiration(id) {
+    const index = inspirations.value.findIndex((insp) => insp.id === id)
     if (index !== -1) {
       inspirations.value.splice(index, 1)
     }
   }
 
-  function addSupplement(inspirationId: string, content: string, type: Supplement['type'] = 'note') {
+  function addSupplement(inspirationId, content, type = 'note') {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
-      const supplement: Supplement = {
+      const supplement = {
         id: generateId(),
         content,
         type,
@@ -87,10 +85,10 @@ export function useInspiration() {
     }
   }
 
-  function deleteSupplement(inspirationId: string, supplementId: string) {
+  function deleteSupplement(inspirationId, supplementId) {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
-      const index = inspiration.supplements.findIndex((sup) =&gt; sup.id === supplementId)
+      const index = inspiration.supplements.findIndex((sup) => sup.id === supplementId)
       if (index !== -1) {
         inspiration.supplements.splice(index, 1)
         updateInspiration(inspirationId, { supplements: inspiration.supplements })
@@ -98,7 +96,7 @@ export function useInspiration() {
     }
   }
 
-  function addAttachmentToInspiration(inspirationId: string, dataUrl: string, fileName: string, type: 'image' | 'audio') {
+  function addAttachmentToInspiration(inspirationId, dataUrl, fileName, type) {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
       const attachment = createAttachment(dataUrl, fileName, type)
@@ -107,10 +105,10 @@ export function useInspiration() {
     }
   }
 
-  function deleteAttachmentFromInspiration(inspirationId: string, attachmentId: string) {
+  function deleteAttachmentFromInspiration(inspirationId, attachmentId) {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
-      const index = inspiration.attachments.findIndex((att) =&gt; att.id === attachmentId)
+      const index = inspiration.attachments.findIndex((att) => att.id === attachmentId)
       if (index !== -1) {
         inspiration.attachments.splice(index, 1)
         updateInspiration(inspirationId, { attachments: inspiration.attachments })
@@ -118,10 +116,10 @@ export function useInspiration() {
     }
   }
 
-  function addAttachmentToSupplement(inspirationId: string, supplementId: string, dataUrl: string, fileName: string, type: 'image' | 'audio') {
+  function addAttachmentToSupplement(inspirationId, supplementId, dataUrl, fileName, type) {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
-      const supplement = inspiration.supplements.find((sup) =&gt; sup.id === supplementId)
+      const supplement = inspiration.supplements.find((sup) => sup.id === supplementId)
       if (supplement) {
         const attachment = createAttachment(dataUrl, fileName, type)
         supplement.attachments.push(attachment)
@@ -130,12 +128,12 @@ export function useInspiration() {
     }
   }
 
-  function deleteAttachmentFromSupplement(inspirationId: string, supplementId: string, attachmentId: string) {
+  function deleteAttachmentFromSupplement(inspirationId, supplementId, attachmentId) {
     const inspiration = getInspirationById(inspirationId)
     if (inspiration) {
-      const supplement = inspiration.supplements.find((sup) =&gt; sup.id === supplementId)
+      const supplement = inspiration.supplements.find((sup) => sup.id === supplementId)
       if (supplement) {
-        const index = supplement.attachments.findIndex((att) =&gt; att.id === attachmentId)
+        const index = supplement.attachments.findIndex((att) => att.id === attachmentId)
         if (index !== -1) {
           supplement.attachments.splice(index, 1)
           updateInspiration(inspirationId, { supplements: [...inspiration.supplements] })
@@ -144,29 +142,29 @@ export function useInspiration() {
     }
   }
 
-  function searchInspirations(query: string): Inspiration[] {
+  function searchInspirations(query) {
     if (!query.trim()) return inspirations.value
     const lowerQuery = query.toLowerCase()
     return inspirations.value.filter(
-      (insp) =&gt;
+      (insp) =>
         insp.content.toLowerCase().includes(lowerQuery) ||
-        insp.tags.some((tag) =&gt; tag.toLowerCase().includes(lowerQuery))
+        insp.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
     )
   }
 
-  function filterInspirationsByTag(tag: string): Inspiration[] {
-    return inspirations.value.filter((insp) =&gt; insp.tags.includes(tag))
+  function filterInspirationsByTag(tag) {
+    return inspirations.value.filter((insp) => insp.tags.includes(tag))
   }
 
   function loadDemoData() {
-    const hasDemoData = inspirations.value.some((insp) =&gt; insp.id.startsWith('demo-'))
+    const hasDemoData = inspirations.value.some((insp) => insp.id.startsWith('demo-'))
     if (hasDemoData) return false
 
-    demoInspirations.forEach((demoInspiration) =&gt; {
+    demoInspirations.forEach((demoInspiration) => {
       if (!demoInspiration.attachments) {
         demoInspiration.attachments = []
       }
-      demoInspiration.supplements.forEach((sup) =&gt; {
+      demoInspiration.supplements.forEach((sup) => {
         if (!sup.attachments) {
           sup.attachments = []
         }

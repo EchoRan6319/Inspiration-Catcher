@@ -1,11 +1,6 @@
-
 import Taro from '@tarojs/taro'
-import { AIAnalysis, AIConfig } from '../types'
 
-export async function analyzeInspiration(
-  content: string,
-  config: AIConfig
-): Promise<AIAnalysis> {
+export async function analyzeInspiration(content, config) {
   const prompt = `请分析以下灵感内容，提供：
 1. 简洁的总结（50字以内）
 2. 3-5个关键词
@@ -24,7 +19,7 @@ ${content}
 }`
 
   try {
-    let result: AIAnalysis
+    let result
 
     switch (config.provider) {
       case 'wenxin':
@@ -59,7 +54,7 @@ ${content}
   }
 }
 
-export async function callWenxinAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callWenxinAPI(prompt, config) {
   const apiUrl = `https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/${config.model || 'ernie-lite-8k'}`
 
   const response = await Taro.request({
@@ -78,7 +73,7 @@ export async function callWenxinAPI(prompt: string, config: AIConfig): Promise<A
   return parseAIResponse(data.result || data)
 }
 
-export async function callWenxinAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callWenxinAPIRaw(prompt, config) {
   const apiUrl = `https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/${config.model || 'ernie-lite-8k'}`
 
   const response = await Taro.request({
@@ -97,7 +92,7 @@ export async function callWenxinAPIRaw(prompt: string, config: AIConfig): Promis
   return data.result || JSON.stringify(data)
 }
 
-export async function callTongyiAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callTongyiAPI(prompt, config) {
   const response = await Taro.request({
     url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
     method: 'POST',
@@ -117,7 +112,7 @@ export async function callTongyiAPI(prompt: string, config: AIConfig): Promise<A
   return parseAIResponse(data.output?.text || data)
 }
 
-export async function callTongyiAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callTongyiAPIRaw(prompt, config) {
   const response = await Taro.request({
     url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
     method: 'POST',
@@ -137,7 +132,7 @@ export async function callTongyiAPIRaw(prompt: string, config: AIConfig): Promis
   return data.output?.text || JSON.stringify(data)
 }
 
-export async function callZhipuAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callZhipuAPI(prompt, config) {
   const response = await Taro.request({
     url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
     method: 'POST',
@@ -155,7 +150,7 @@ export async function callZhipuAPI(prompt: string, config: AIConfig): Promise<AI
   return parseAIResponse(data.choices?.[0]?.message?.content || data)
 }
 
-export async function callZhipuAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callZhipuAPIRaw(prompt, config) {
   const response = await Taro.request({
     url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
     method: 'POST',
@@ -173,7 +168,7 @@ export async function callZhipuAPIRaw(prompt: string, config: AIConfig): Promise
   return data.choices?.[0]?.message?.content || JSON.stringify(data)
 }
 
-export async function callCustomAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callCustomAPI(prompt, config) {
   if (!config.apiUrl) {
     throw new Error('Custom API URL is required')
   }
@@ -195,7 +190,7 @@ export async function callCustomAPI(prompt: string, config: AIConfig): Promise<A
   return parseAIResponse(data)
 }
 
-export async function callCustomAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callCustomAPIRaw(prompt, config) {
   if (!config.apiUrl) {
     throw new Error('Custom API URL is required')
   }
@@ -217,7 +212,7 @@ export async function callCustomAPIRaw(prompt: string, config: AIConfig): Promis
   return JSON.stringify(data)
 }
 
-export async function callDeepSeekAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callDeepSeekAPI(prompt, config) {
   const response = await Taro.request({
     url: 'https://api.deepseek.com/v1/chat/completions',
     method: 'POST',
@@ -235,7 +230,7 @@ export async function callDeepSeekAPI(prompt: string, config: AIConfig): Promise
   return parseAIResponse(data.choices?.[0]?.message?.content || data)
 }
 
-export async function callDeepSeekAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callDeepSeekAPIRaw(prompt, config) {
   const response = await Taro.request({
     url: 'https://api.deepseek.com/v1/chat/completions',
     method: 'POST',
@@ -253,7 +248,7 @@ export async function callDeepSeekAPIRaw(prompt: string, config: AIConfig): Prom
   return data.choices?.[0]?.message?.content || JSON.stringify(data)
 }
 
-export async function callOpenAIAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callOpenAIAPI(prompt, config) {
   const response = await Taro.request({
     url: 'https://api.openai.com/v1/chat/completions',
     method: 'POST',
@@ -271,7 +266,7 @@ export async function callOpenAIAPI(prompt: string, config: AIConfig): Promise<A
   return parseAIResponse(data.choices?.[0]?.message?.content || data)
 }
 
-export async function callOpenAIAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callOpenAIAPIRaw(prompt, config) {
   const response = await Taro.request({
     url: 'https://api.openai.com/v1/chat/completions',
     method: 'POST',
@@ -289,7 +284,7 @@ export async function callOpenAIAPIRaw(prompt: string, config: AIConfig): Promis
   return data.choices?.[0]?.message?.content || JSON.stringify(data)
 }
 
-export async function callGeminiAPI(prompt: string, config: AIConfig): Promise<AIAnalysis> {
+export async function callGeminiAPI(prompt, config) {
   const response = await Taro.request({
     url: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
     method: 'POST',
@@ -307,7 +302,7 @@ export async function callGeminiAPI(prompt: string, config: AIConfig): Promise<A
   return parseAIResponse(content)
 }
 
-export async function callGeminiAPIRaw(prompt: string, config: AIConfig): Promise<string> {
+export async function callGeminiAPIRaw(prompt, config) {
   const response = await Taro.request({
     url: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
     method: 'POST',
@@ -324,7 +319,7 @@ export async function callGeminiAPIRaw(prompt: string, config: AIConfig): Promis
   return data.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(data)
 }
 
-function parseAIResponse(response: any): AIAnalysis {
+function parseAIResponse(response) {
   if (typeof response === 'string') {
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/)
@@ -337,13 +332,13 @@ function parseAIResponse(response: any): AIAnalysis {
   }
 
   if (response.summary && response.keywords) {
-    return response as AIAnalysis
+    return response
   }
 
   throw new Error('Invalid AI response format')
 }
 
-function getMockAnalysis(content: string): AIAnalysis {
+function getMockAnalysis(content) {
   const keywords = content
     .split(/[\s，。！？、；：""''（）【】\.,!\?;:''""]+/)
     .filter((word) => word.length >= 2)

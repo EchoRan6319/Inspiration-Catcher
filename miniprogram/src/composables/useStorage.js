@@ -1,11 +1,9 @@
-
 import { ref, watch } from 'vue'
-import { Inspiration, AIConfig } from '../types'
 import { getInspirations, saveInspirations, getAIConfig, saveAIConfig } from '../utils/storage'
 
 export function useStorage() {
-  const inspirations = ref&lt;Inspiration[]&gt;([])
-  const aiConfig = ref&lt;AIConfig | null&gt;(null)
+  const inspirations = ref([])
+  const aiConfig = ref(null)
   const isLoaded = ref(false)
 
   function load() {

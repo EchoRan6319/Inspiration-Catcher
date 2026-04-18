@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from 'vue'
 import Taro from '@tarojs/taro'
 import { useInspiration } from '@/composables/useInspiration'
@@ -7,7 +7,7 @@ import AttachmentUploader from '@/components/AttachmentUploader.vue'
 import AttachmentDisplay from '@/components/AttachmentDisplay.vue'
 
 import { formatDate } from '@/utils/helpers'
-import { EMOTION_OPTIONS, SUPPLEMENT_TYPES, Supplement, AIConfig, Attachment } from '@/types'
+import { EMOTION_OPTIONS, SUPPLEMENT_TYPES } from '@/types'
 const { 
   getInspirationById, 
   deleteInspiration, 
@@ -21,33 +21,33 @@ const {
 const { aiConfig, setConfig, testModel, analyzeFeasibility, chatWithAI } = useAI()
 
 const isTesting = ref(false)
-const testResult = ref(null as { success: boolean; message: string } | null)
+const testResult = ref(null)
 
 const showFeasibilityAnalysis = ref(false)
 const isAnalyzingFeasibility = ref(false)
-const feasibilityResult = ref(null as { feasibility: string; analysis: string; suggestions: string[] } | null)
+const feasibilityResult = ref(null)
 
 const showChat = ref(false)
 const isChatting = ref(false)
 const chatInput = ref('')
-const chatHistory = ref([] as { role: 'user' | 'assistant'; content: string }[])
+const chatHistory = ref([])
 
-const showSupplementAttachmentUploader = ref(null as string | null)
-const supplementAttachments = ref({} as Record<string, Attachment[]>)
+const showSupplementAttachmentUploader = ref(null)
+const supplementAttachments = ref({})
 
-const routerParams = ref({} as Taro.getRouterParams)
+const routerParams = ref({})
 
-const inspiration = computed(() => getInspirationById(routerParams.value.id as string))
+const inspiration = computed(() => getInspirationById(routerParams.value.id))
 const emotionInfo = computed(() => EMOTION_OPTIONS.find((e) => e.value === inspiration.value?.emotion))
 
 const showAIConfig = ref(false)
-const aiProvider = ref('wenxin' as AIConfig['provider'])
+const aiProvider = ref('wenxin')
 const aiApiKey = ref('')
 const aiModel = ref('')
 const aiApiUrl = ref('')
 
 const newSupplement = ref('')
-const supplementType = ref('note' as Supplement['type'])
+const supplementType = ref('note')
 
 function goBack() {
   Taro.navigateBack()
@@ -60,7 +60,7 @@ function goToCollection() {
 }
 
 function saveAIConfig() {
-  const config: AIConfig = {
+  const config = {
     provider: aiProvider.value,
     apiKey: aiApiKey.value,
     model: aiModel.value || undefined,
@@ -71,7 +71,7 @@ function saveAIConfig() {
 }
 
 async function handleTestModel() {
-  const config: AIConfig = {
+  const config = {
     provider: aiProvider.value,
     apiKey: aiApiKey.value,
     model: aiModel.value || undefined,
@@ -160,17 +160,17 @@ function handleAddSupplement() {
   showSupplementAttachmentUploader.value = null
 }
 
-function handleInspirationAttachmentUpload(dataUrl: string, fileName: string, type: 'image' | 'audio') {
+function handleInspirationAttachmentUpload(dataUrl, fileName, type) {
   if (!inspiration.value) return
   addAttachmentToInspiration(inspiration.value.id, dataUrl, fileName, type)
 }
 
-function handleDeleteInspirationAttachment(attachmentId: string) {
+function handleDeleteInspirationAttachment(attachmentId) {
   if (!inspiration.value) return
   deleteAttachmentFromInspiration(inspiration.value.id, attachmentId)
 }
 
-function handleSupplementAttachmentUpload(supplementId: string, dataUrl: string, fileName: string, type: 'image' | 'audio') {
+function handleSupplementAttachmentUpload(supplementId, dataUrl, fileName, type) {
   if (!supplementAttachments.value[supplementId]) {
     supplementAttachments.value[supplementId] = []
   }
@@ -183,7 +183,7 @@ function handleSupplementAttachmentUpload(supplementId: string, dataUrl: string,
   })
 }
 
-function handleDeleteSupplementAttachment(supplementId: string, attachmentId: string) {
+function handleDeleteSupplementAttachment(supplementId, attachmentId) {
   if (supplementAttachments.value[supplementId]) {
     const index = supplementAttachments.value[supplementId].findIndex(a => a.id === attachmentId)
     if (index !== -1) {
@@ -192,7 +192,7 @@ function handleDeleteSupplementAttachment(supplementId: string, attachmentId: st
   }
 }
 
-function handleDeleteSavedSupplementAttachment(supplementId: string, attachmentId: string) {
+function handleDeleteSavedSupplementAttachment(supplementId, attachmentId) {
   if (!inspiration.value) return
   deleteAttachmentFromSupplement(inspiration.value.id, supplementId, attachmentId)
 }
@@ -203,7 +203,7 @@ function confirmDelete() {
     content: '确定要删除这个灵感吗？',
     success: (res) => {
       if (res.confirm) {
-        deleteInspiration(routerParams.value.id as string)
+        deleteInspiration(routerParams.value.id)
         Taro.switchTab({
           url: '/pages/collection/index'
         })

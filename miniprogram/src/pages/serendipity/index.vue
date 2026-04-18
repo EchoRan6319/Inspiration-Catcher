@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted, computed } from 'vue'
 import Taro from '@tarojs/taro'
 import { useSerendipity } from '@/composables/useSerendipity'

@@ -1,8 +1,8 @@
-import { Inspiration, COLOR_OPTIONS } from '../types'
+import { COLOR_OPTIONS } from '../types'
 
 const getRandomColor = () => COLOR_OPTIONS[Math.floor(Math.random() * COLOR_OPTIONS.length)]
 
-export const demoInspirations: Inspiration[] = [
+export const demoInspirations = [
   {
     id: 'demo-1',
     content: '今天突然想到一个新的应用创意：一个可以记录和分析梦境的应用，用户可以记录自己的梦境，系统会分析梦境的主题和情感，帮助用户了解自己的潜意识。',

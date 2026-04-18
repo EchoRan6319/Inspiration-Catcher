@@ -1,14 +1,11 @@
-<script setup lang="ts">
+<script setup>
 import Taro from '@tarojs/taro'
-import { Inspiration } from '../types'
 import { formatRelativeTime } from '../utils/helpers'
 import { EMOTION_OPTIONS } from '../types'
 
-interface Props {
-  inspiration: Inspiration
-}
-
-const props = defineProps<Props>()
+const props = defineProps({
+  inspiration: Object
+})
 
 const emotionInfo = EMOTION_OPTIONS.find((e) => e.value === props.inspiration.emotion)
 
@@ -21,7 +18,7 @@ function goToDetail() {
   <view
     @tap="goToDetail"
     class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
-    :style="{ borderLeft: `4px solid ${inspiration.color}" }"
+    :style="{ borderLeft: `4px solid ${inspiration.color}` }"
   >
     <view class="p-6">
       <view class="flex items-start justify-between mb-3">

@@ -1,14 +1,17 @@
-<script setup lang="ts">
-import { AIAnalysis } from '../types'
-
-interface Props {
-  analysis?: AIAnalysis
-  isLoading?: boolean
-  onAnalyze?: () => void
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  isLoading: false,
+<script setup>
+const props = defineProps({
+  analysis: {
+    type: Object,
+    default: null
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  },
+  onAnalyze: {
+    type: Function,
+    default: null
+  }
 })
 </script>
 

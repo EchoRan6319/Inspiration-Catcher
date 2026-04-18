@@ -1,8 +1,8 @@
-export function generateId(): string {
+export function generateId() {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 }
 
-export function formatDate(date: Date): string {
+export function formatDate(date) {
   return new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
@@ -12,7 +12,7 @@ export function formatDate(date: Date): string {
   })
 }
 
-export function formatRelativeTime(date: Date): string {
+export function formatRelativeTime(date) {
   const now = new Date()
   const diff = now.getTime() - new Date(date).getTime()
   const minutes = Math.floor(diff / 60000)
@@ -26,22 +26,19 @@ export function formatRelativeTime(date: Date): string {
   return formatDate(date)
 }
 
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout> | null = null
-  return function executedFunction(...args: Parameters<T>) {
+export function debounce(func, wait) {
+  let timeout = null
+  return function executedFunction(...args) {
     if (timeout) clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), wait)
   }
 }
 
-export function getRandomItem<T>(array: T[]): T {
+export function getRandomItem(array) {
   return array[Math.floor(Math.random() * array.length)]
 }
 
-export function shuffleArray<T>(array: T[]): T[] {
+export function shuffleArray(array) {
   const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))

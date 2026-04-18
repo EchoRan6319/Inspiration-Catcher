@@ -1,21 +1,20 @@
 import Taro from '@tarojs/taro'
-import { Inspiration, AIConfig } from '../types'
 
 const STORAGE_KEYS = {
   INSPIRATIONS: 'inspiration_tracker_inspirations',
   AI_CONFIG: 'inspiration_tracker_ai_config',
 }
 
-export function storageGet<T>(key: string, defaultValue: T): T {
+export function storageGet(key, defaultValue) {
   try {
     const item = Taro.getStorageSync(key)
-    return item ? (JSON.parse(item) as T) : defaultValue
+    return item ? JSON.parse(item) : defaultValue
   } catch {
     return defaultValue
   }
 }
 
-export function storageSet<T>(key: string, value: T): void {
+export function storageSet(key, value) {
   try {
     Taro.setStorageSync(key, JSON.stringify(value))
   } catch (error) {
@@ -23,7 +22,7 @@ export function storageSet<T>(key: string, value: T): void {
   }
 }
 
-export function storageRemove(key: string): void {
+export function storageRemove(key) {
   try {
     Taro.removeStorageSync(key)
   } catch (error) {
@@ -31,8 +30,8 @@ export function storageRemove(key: string): void {
   }
 }
 
-export function getInspirations(): Inspiration[] {
-  const inspirations = storageGet<Inspiration[]>(STORAGE_KEYS.INSPIRATIONS, [])
+export function getInspirations() {
+  const inspirations = storageGet(STORAGE_KEYS.INSPIRATIONS, [])
   return inspirations.map((insp) => ({
     ...insp,
     createdAt: new Date(insp.createdAt),
@@ -52,18 +51,18 @@ export function getInspirations(): Inspiration[] {
   }))
 }
 
-export function saveInspirations(inspirations: Inspiration[]): void {
+export function saveInspirations(inspirations) {
   storageSet(STORAGE_KEYS.INSPIRATIONS, inspirations)
 }
 
-export function getAIConfig(): AIConfig | null {
-  return storageGet<AIConfig | null>(STORAGE_KEYS.AI_CONFIG, null)
+export function getAIConfig() {
+  return storageGet(STORAGE_KEYS.AI_CONFIG, null)
 }
 
-export function saveAIConfig(config: AIConfig): void {
+export function saveAIConfig(config) {
   storageSet(STORAGE_KEYS.AI_CONFIG, config)
 }
 
-export function removeAIConfig(): void {
+export function removeAIConfig() {
   storageRemove(STORAGE_KEYS.AI_CONFIG)
 }

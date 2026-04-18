@@ -1,6 +1,4 @@
-
 import { ref } from 'vue'
-import { AIAnalysis, AIConfig } from '../types'
 import { analyzeInspiration } from '../utils/ai'
 import { useStorage } from './useStorage'
 import { useInspiration } from './useInspiration'
@@ -10,9 +8,9 @@ export function useAI() {
   const { aiConfig } = useStorage()
   const { updateInspiration } = useInspiration()
   const isAnalyzing = ref(false)
-  const error = ref&lt;string | null&gt;(null)
+  const error = ref(null)
 
-  async function analyze(inspirationId: string, content: string): Promise&lt;AIAnalysis | null&gt; {
+  async function analyze(inspirationId, content) {
     if (!aiConfig.value) {
       error.value = '请先配置 AI 服务'
       return null
@@ -33,7 +31,7 @@ export function useAI() {
     }
   }
 
-  function setConfig(config: AIConfig) {
+  function setConfig(config) {
     aiConfig.value = config
   }
 
@@ -41,7 +39,7 @@ export function useAI() {
     aiConfig.value = null
   }
 
-  async function testModel(config: AIConfig): Promise&lt;{ success: boolean; message: string }&gt; {
+  async function testModel(config) {
     if (!config.apiKey) {
       return { success: false, message: '请输入API Key' }
     }
@@ -92,7 +90,7 @@ export function useAI() {
     }
   }
 
-  async function analyzeFeasibility(content: string): Promise&lt;{ feasibility: string; analysis: string; suggestions: string[] }&gt; {
+  async function analyzeFeasibility(content) {
     if (!aiConfig.value) {
       throw new Error('请先配置AI服务')
     }
@@ -174,7 +172,7 @@ ${content}
     }
   }
 
-  async function chatWithAI(content: string, conversationHistory: { role: 'user' | 'assistant'; content: string }[]): Promise&lt;string&gt; {
+  async function chatWithAI(content, conversationHistory) {
     if (!aiConfig.value) {
       throw new Error('请先配置AI服务')
     }
@@ -185,7 +183,7 @@ ${content}
 ${content}
 
 对话历史：
-${conversationHistory.map(msg =&gt; `${msg.role === 'user' ? '用户' : '助手'}: ${msg.content}`).join('\n')}
+${conversationHistory.map(msg => `${msg.role === 'user' ? '用户' : '助手'}: ${msg.content}`).join('\n')}
 
 请以助手的身份回应，保持对话的连贯性和相关性，基于原始想法提供有价值的见解和建议。
 
