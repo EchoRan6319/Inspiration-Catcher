@@ -84,7 +84,7 @@
 
 ### AC-7: 路由系统适配完成
 - **Given**: 现有 Vue Router 配置
-- **When**: 配置 Taro 页面路由和 TabBar
+- **When**: 配置 Taro 页面路由和 TabBar（包含「灵感捕手记录」和「灵感集」两个标签）
 - **Then**: 页面跳转正常，TabBar 工作正常
 - **Verification**: `human-judgment`
 
