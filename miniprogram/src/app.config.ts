@@ -19,15 +19,11 @@ export default defineAppConfig({
     list: [
       {
         pagePath: 'pages/capture/index',
-        text: '灵感捕获',
-        iconPath: 'assets/tabbar/add.png',
-        selectedIconPath: 'assets/tabbar/add-active.png'
+        text: '灵感捕获'
       },
       {
         pagePath: 'pages/collection/index',
-        text: '灵感集',
-        iconPath: 'assets/tabbar/collection.png',
-        selectedIconPath: 'assets/tabbar/collection-active.png'
+        text: '灵感集'
       }
     ]
   }
