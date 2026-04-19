@@ -175,6 +175,51 @@ export function useInspiration() {
     return true
   }
 
+  function cleanOldInspirations(daysOld = 30) {
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld)
+    
+    const initialLength = inspirations.value.length
+    inspirations.value = inspirations.value.filter(insp => {
+      const inspDate = new Date(insp.createdAt)
+      return inspDate >= cutoffDate
+    })
+    
+    return initialLength - inspirations.value.length
+  }
+
+  function getStorageUsage() {
+    try {
+      const inspirationsData = JSON.stringify(inspirations.value)
+      const usageKB = Math.round((inspirationsData.length / 1024) * 100) / 100
+      return {
+        size: usageKB,
+        count: inspirations.value.length,
+        maxSize: 10240 // 10MB in KB
+      }
+    } catch (error) {
+      console.error('Failed to calculate storage usage:', error)
+      return { size: 0, count: 0, maxSize: 10240 }
+    }
+  }
+
+  function optimizeAttachments() {
+    // 简单的附件优化：检查并清理空附件
+    inspirations.value.forEach(inspiration => {
+      // 清理灵感的空附件
+      inspiration.attachments = (inspiration.attachments || []).filter(att => 
+        att.dataUrl && att.dataUrl.length > 0
+      )
+      
+      // 清理补充的空附件
+      inspiration.supplements.forEach(sup => {
+        sup.attachments = (sup.attachments || []).filter(att => 
+          att.dataUrl && att.dataUrl.length > 0
+        )
+      })
+    })
+  }
+
   return {
     inspirations,
     allTags,
@@ -191,5 +236,8 @@ export function useInspiration() {
     searchInspirations,
     filterInspirationsByTag,
     loadDemoData,
+    cleanOldInspirations,
+    getStorageUsage,
+    optimizeAttachments,
   }
 }
