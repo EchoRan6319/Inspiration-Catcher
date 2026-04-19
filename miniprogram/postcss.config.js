@@ -3,4 +3,10 @@ module.exports = {
     tailwindcss: {},
     autoprefixer: {},
   },
+  mini: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    }
+  }
 }
