@@ -3,9 +3,12 @@ import { ref, computed, onMounted } from 'vue'
 import Taro from '@tarojs/taro'
 import { useInspiration } from '@/composables/useInspiration'
 
-const { getInspirationById, deleteInspiration } = useInspiration()
+const { getInspirationById, deleteInspiration, addSupplement: addSupplementToInspiration } = useInspiration()
 const routerParams = ref({})
 const newSupplement = ref('')
+const aiAnalysis = ref('')
+const aiConversation = ref([])
+const newAiMessage = ref('')
 
 const emotionOptions = [
   { value: 'excited', label: '兴奋', color: '#f59e0b' },
@@ -17,6 +20,74 @@ const emotionOptions = [
 
 const inspiration = computed(() => getInspirationById(routerParams.value.id))
 const emotionInfo = computed(() => emotionOptions.find(opt => opt.value === inspiration.value?.emotion))
+
+onMounted(() => {
+  // 获取路由参数
+  const params = Taro.getCurrentInstance().router.params
+  if (params && params.id) {
+    routerParams.value = params
+    // 加载已有数据
+    loadExistingData()
+  }
+})
+
+function loadExistingData() {
+  const insp = inspiration.value
+  if (insp) {
+    // 加载 AI 分析数据
+    if (insp.aiAnalysis) {
+      aiAnalysis.value = insp.aiAnalysis
+    }
+    // 加载 AI 对话数据
+    if (insp.aiConversation) {
+      aiConversation.value = insp.aiConversation
+    }
+  }
+}
+
+function saveAiAnalysis() {
+  const insp = inspiration.value
+  if (insp && aiAnalysis.value) {
+    // 保存 AI 分析数据到灵感对象
+    insp.aiAnalysis = aiAnalysis.value
+  }
+}
+
+function saveAiConversation() {
+  const insp = inspiration.value
+  if (insp && aiConversation.value.length > 0) {
+    // 保存 AI 对话数据到灵感对象
+    insp.aiConversation = aiConversation.value
+  }
+}
+
+function sendAiMessage() {
+  if (!newAiMessage.value.trim()) return
+  
+  // 添加用户消息
+  aiConversation.value.push({
+    id: Date.now().toString(),
+    type: 'user',
+    content: newAiMessage.value.trim(),
+    timestamp: new Date()
+  })
+  
+  // 模拟 AI 回复
+  setTimeout(() => {
+    aiConversation.value.push({
+      id: (Date.now() + 1).toString(),
+      type: 'ai',
+      content: '这是一个模拟的 AI 回复，实际应用中会调用真实的 AI API',
+      timestamp: new Date()
+    })
+    // 保存对话
+    saveAiConversation()
+  }, 1000)
+  
+  newAiMessage.value = ''
+  // 保存对话
+  saveAiConversation()
+}
 
 function goBack() {
   Taro.navigateBack()
@@ -37,9 +108,17 @@ function confirmDelete() {
 
 function addSupplement() {
   if (!inspiration.value || !newSupplement.value.trim()) return
+  
+  // 添加补充记录
+  addSupplementToInspiration(inspiration.value.id, newSupplement.value.trim())
+  
+  // 清空输入框
+  newSupplement.value = ''
+  
+  // 显示成功提示
   Taro.showToast({
-    title: '功能开发中',
-    icon: 'none'
+    title: '补充记录已保存',
+    icon: 'success'
   })
 }
 </script>
@@ -69,12 +148,51 @@ function addSupplement() {
           </view>
         </view>
 
-        <view v-if="inspiration.supplements.length > 0" class="supplements-section">
+        <!-- 补充记录 -->
+        <view class="supplements-section">
           <text class="section-title text-lg font-semibold text-gray-800 mb-4">📝 补充记录</text>
           <view class="supplement-list space-y-4">
             <view v-for="(supplement, index) in inspiration.supplements" :key="supplement.id" class="supplement-card">
               <text class="supplement-content text-gray-700">{{ supplement.content }}</text>
             </view>
+          </view>
+          <view class="add-supplement">
+            <textarea
+              v-model="newSupplement"
+              placeholder="添加补充记录..."
+              class="supplement-input"
+            />
+            <view @tap="addSupplement" class="add-btn">添加</view>
+          </view>
+        </view>
+
+        <!-- AI 分析 -->
+        <view class="ai-analysis-section">
+          <text class="section-title text-lg font-semibold text-gray-800 mb-4">🤖 AI 分析</text>
+          <textarea
+            v-model="aiAnalysis"
+            placeholder="AI 分析结果将显示在这里..."
+            class="ai-analysis-input"
+            @blur="saveAiAnalysis"
+          />
+        </view>
+
+        <!-- AI 对话 -->
+        <view class="ai-conversation-section">
+          <text class="section-title text-lg font-semibold text-gray-800 mb-4">💬 AI 对话</text>
+          <view class="conversation-list">
+            <view v-for="message in aiConversation" :key="message.id" :class="['message', message.type]">
+              <text class="message-content">{{ message.content }}</text>
+            </view>
+          </view>
+          <view class="message-input-wrapper">
+            <input
+              v-model="newAiMessage"
+              placeholder="输入消息..."
+              class="message-input"
+              @confirm="sendAiMessage"
+            />
+            <view @tap="sendAiMessage" class="send-btn">发送</view>
           </view>
         </view>
 
@@ -98,17 +216,19 @@ function addSupplement() {
 }
 
 .content-wrapper {
-  padding: 64rpx 32rpx;
+  padding: 32rpx 24rpx;
   max-width: 900rpx;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .inspiration-detail {
   background: white;
   border-radius: 48rpx;
-  padding: 64rpx;
+  padding: 48rpx;
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.1);
   border-top: 8rpx solid;
+  box-sizing: border-box;
 }
 
 .detail-header {
@@ -190,6 +310,111 @@ function addSupplement() {
   font-size: 28rpx;
   color: #374151;
   display: block;
+}
+
+.add-supplement {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 32rpx;
+  align-items: flex-end;
+}
+
+.supplement-input {
+  flex: 1;
+  min-height: 120rpx;
+  padding: 16rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.add-btn {
+  padding: 16rpx 32rpx;
+  background: linear-gradient(to right, #6366f1, #7c3aed);
+  color: white;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.ai-analysis-section {
+  margin-top: 48rpx;
+  padding-top: 48rpx;
+  border-top: 2rpx solid #f3f4f6;
+}
+
+.ai-analysis-input {
+  width: 100%;
+  min-height: 160rpx;
+  padding: 24rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.ai-conversation-section {
+  margin-top: 48rpx;
+  padding-top: 48rpx;
+  border-top: 2rpx solid #f3f4f6;
+}
+
+.conversation-list {
+  min-height: 200rpx;
+  margin-bottom: 32rpx;
+}
+
+.message {
+  margin-bottom: 16rpx;
+  max-width: 80%;
+  padding: 16rpx 24rpx;
+  border-radius: 24rpx;
+  box-sizing: border-box;
+}
+
+.message.user {
+  background: #e0e7ff;
+  color: #374151;
+  align-self: flex-end;
+  margin-left: auto;
+  border-bottom-right-radius: 8rpx;
+}
+
+.message.ai {
+  background: #f3f4f6;
+  color: #374151;
+  align-self: flex-start;
+  border-bottom-left-radius: 8rpx;
+}
+
+.message-content {
+  font-size: 28rpx;
+  line-height: 1.4;
+}
+
+.message-input-wrapper {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.message-input {
+  flex: 1;
+  padding: 16rpx 24rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.send-btn {
+  padding: 16rpx 32rpx;
+  background: linear-gradient(to right, #6366f1, #7c3aed);
+  color: white;
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  font-weight: 500;
 }
 
 .action-buttons {

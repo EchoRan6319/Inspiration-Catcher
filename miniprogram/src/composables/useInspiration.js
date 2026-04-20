@@ -47,6 +47,8 @@ export function useInspiration() {
       updatedAt: now,
       supplements: [],
       attachments: [],
+      aiAnalysis: '',
+      aiConversation: [],
     }
     inspirations.value.unshift(inspiration)
     return inspiration
@@ -163,6 +165,12 @@ export function useInspiration() {
     demoInspirations.forEach((demoInspiration) => {
       if (!demoInspiration.attachments) {
         demoInspiration.attachments = []
+      }
+      if (!demoInspiration.aiAnalysis) {
+        demoInspiration.aiAnalysis = ''
+      }
+      if (!demoInspiration.aiConversation) {
+        demoInspiration.aiConversation = []
       }
       demoInspiration.supplements.forEach((sup) => {
         if (!sup.attachments) {
