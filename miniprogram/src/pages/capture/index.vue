@@ -135,9 +135,10 @@ function getEmotionStyle(option) {
 }
 
 .content-wrapper {
-  padding: 64rpx 32rpx;
+  padding: 32rpx 24rpx;
   max-width: 900rpx;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .header {
@@ -161,8 +162,9 @@ function getEmotionStyle(option) {
 .card {
   background: white;
   border-radius: 48rpx;
-  padding: 64rpx;
+  padding: 48rpx;
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .form-group {

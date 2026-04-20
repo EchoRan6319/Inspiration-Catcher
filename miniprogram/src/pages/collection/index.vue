@@ -147,9 +147,10 @@ function getEmotionInfo(emotionValue) {
 }
 
 .content-wrapper {
-  padding: 64rpx 32rpx;
+  padding: 32rpx 24rpx;
   max-width: 1200rpx;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .header {
@@ -163,16 +164,17 @@ function getEmotionInfo(emotionValue) {
 
 .search-input {
   width: 100%;
-  padding: 24rpx 32rpx;
-  padding-left: 80rpx;
+  padding: 20rpx 24rpx;
+  padding-left: 72rpx;
   border: 2rpx solid #e5e7eb;
   border-radius: 32rpx;
   font-size: 28rpx;
   background: white;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%239ca3af"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>');
   background-repeat: no-repeat;
-  background-position: 24rpx center;
-  background-size: 32rpx 32rpx;
+  background-position: 20rpx center;
+  background-size: 28rpx 28rpx;
+  box-sizing: border-box;
 }
 
 .inspiration-list {
