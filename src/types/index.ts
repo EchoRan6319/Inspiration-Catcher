@@ -19,6 +19,58 @@ export interface Inspiration {
   attachments: Attachment[]
   aiAnalysis?: AIAnalysis
   aiConversation?: { role: 'user' | 'assistant'; content: string }[]
+  projectId?: string
+  isArchived: boolean
+}
+
+export interface Project {
+  id: string
+  inspirationId: string
+  title: string
+  description: string
+  status: 'planning' | 'in_progress' | 'completed' | 'paused'
+  deadline?: Date
+  successCriteria: string[]
+  tasks: Task[]
+  createdAt: Date
+  updatedAt: Date
+  completedAt?: Date
+}
+
+export interface Task {
+  id: string
+  projectId: string
+  title: string
+  description?: string
+  status: 'todo' | 'in_progress' | 'completed'
+  priority: 'low' | 'medium' | 'high'
+  dueDate?: Date
+  estimatedHours?: number
+  completedAt?: Date
+  order: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Achievement {
+  id: string
+  type: 'first_inspiration' | 'first_project' | 'seven_day_streak' | 'ten_projects' | 'hundred_inspirations' | string
+  title: string
+  description: string
+  icon: string
+  unlockedAt: Date
+}
+
+export interface AIAnalysis {
+  summary: string
+  keywords: string[]
+  categories: string[]
+  suggestions: string[]
+  feasibilityScore?: number
+  potentialScore?: number
+  risks?: string[]
+  actionPlan?: string[]
+  relatedInspirationIds?: string[]
 }
 
 export interface Supplement {

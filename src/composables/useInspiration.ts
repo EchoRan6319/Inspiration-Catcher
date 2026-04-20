@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { Inspiration, Supplement, Attachment } from '../types'
+import type { Inspiration, Supplement, Attachment, Project, Task } from '../types'
 import { generateId, getRandomItem } from '../utils/helpers'
 import { COLOR_OPTIONS } from '../types'
 import { useStorage } from './useStorage'
@@ -19,7 +19,7 @@ function createAttachment(dataUrl: string, fileName: string, type: 'image' | 'au
 }
 
 export function useInspiration() {
-  const { inspirations } = useStorage()
+  const { inspirations, projects } = useStorage()
 
   const allTags = computed(() => {
     const tags = new Set<string>()
@@ -29,8 +29,24 @@ export function useInspiration() {
     return Array.from(tags)
   })
 
+  const activeProjects = computed(() => 
+    projects.value.filter(p => p.status !== 'completed' && p.status !== 'paused')
+  )
+
+  const completedProjects = computed(() => 
+    projects.value.filter(p => p.status === 'completed')
+  )
+
   function getInspirationById(id: string): Inspiration | undefined {
     return inspirations.value.find((insp) => insp.id === id)
+  }
+
+  function getProjectById(id: string): Project | undefined {
+    return projects.value.find((p) => p.id === id)
+  }
+
+  function getProjectByInspirationId(inspirationId: string): Project | undefined {
+    return projects.value.find((p) => p.inspirationId === inspirationId)
   }
 
   function createInspiration(
@@ -51,9 +67,120 @@ export function useInspiration() {
       attachments: [],
       aiAnalysis: undefined,
       aiConversation: [],
+      isArchived: false,
     }
     inspirations.value.unshift(inspiration)
     return inspiration
+  }
+
+  function createProjectFromInspiration(
+    inspirationId: string,
+    title: string,
+    description: string,
+    successCriteria: string[] = []
+  ): Project {
+    const inspiration = getInspirationById(inspirationId)
+    if (!inspiration) {
+      throw new Error('Inspiration not found')
+    }
+
+    const now = new Date()
+    const project: Project = {
+      id: generateId(),
+      inspirationId,
+      title,
+      description,
+      status: 'planning',
+      successCriteria,
+      tasks: [],
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    projects.value.unshift(project)
+    
+    // 更新灵感，关联项目
+    updateInspiration(inspirationId, { projectId: project.id })
+
+    return project
+  }
+
+  function addTaskToProject(
+    projectId: string,
+    title: string,
+    description?: string,
+    priority: Task['priority'] = 'medium',
+    dueDate?: Date
+  ): Task {
+    const project = getProjectById(projectId)
+    if (!project) {
+      throw new Error('Project not found')
+    }
+
+    const now = new Date()
+    const task: Task = {
+      id: generateId(),
+      projectId,
+      title,
+      description,
+      status: 'todo',
+      priority,
+      dueDate,
+      order: project.tasks.length,
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    project.tasks.push(task)
+    updateProject(projectId, { tasks: project.tasks })
+
+    return task
+  }
+
+  function updateTask(
+    projectId: string,
+    taskId: string,
+    updates: Partial<Omit<Task, 'id' | 'projectId' | 'createdAt'>>
+  ) {
+    const project = getProjectById(projectId)
+    if (!project) return
+
+    const taskIndex = project.tasks.findIndex(t => t.id === taskId)
+    if (taskIndex !== -1) {
+      project.tasks[taskIndex] = {
+        ...project.tasks[taskIndex],
+        ...updates,
+        updatedAt: new Date(),
+      }
+      updateProject(projectId, { tasks: project.tasks })
+    }
+  }
+
+  function updateProject(
+    id: string,
+    updates: Partial<Omit<Project, 'id' | 'inspirationId' | 'createdAt'>>
+  ) {
+    const index = projects.value.findIndex((p) => p.id === id)
+    if (index !== -1) {
+      projects.value[index] = {
+        ...projects.value[index],
+        ...updates,
+        updatedAt: new Date(),
+      }
+    }
+  }
+
+  function deleteProject(id: string) {
+    const index = projects.value.findIndex((p) => p.id === id)
+    if (index !== -1) {
+      const project = projects.value[index]
+      // 清除灵感的项目关联
+      const inspiration = getInspirationById(project.inspirationId)
+      if (inspiration) {
+        updateInspiration(project.inspirationId, { projectId: undefined })
+      }
+      projects.value.splice(index, 1)
+    }
   }
 
   function updateInspiration(id: string, updates: Partial<Omit<Inspiration, 'id' | 'createdAt'>>) {
@@ -189,11 +316,21 @@ export function useInspiration() {
 
   return {
     inspirations,
+    projects,
     allTags,
+    activeProjects,
+    completedProjects,
     getInspirationById,
+    getProjectById,
+    getProjectByInspirationId,
     createInspiration,
     updateInspiration,
     deleteInspiration,
+    createProjectFromInspiration,
+    updateProject,
+    deleteProject,
+    addTaskToProject,
+    updateTask,
     addSupplement,
     deleteSupplement,
     addAttachmentToInspiration,

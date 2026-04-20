@@ -1,9 +1,11 @@
 
-import type { Inspiration, AIConfig } from '../types'
+import type { Inspiration, AIConfig, Project, Task, Achievement } from '../types'
 
 const STORAGE_KEYS = {
   INSPIRATIONS: 'inspiration_tracker_inspirations',
   AI_CONFIG: 'inspiration_tracker_ai_config',
+  PROJECTS: 'inspiration_tracker_projects',
+  ACHIEVEMENTS: 'inspiration_tracker_achievements',
 }
 
 export function storageGet<T>(key: string, defaultValue: T): T {
@@ -62,4 +64,38 @@ export function saveAIConfig(config: AIConfig): void {
 
 export function removeAIConfig(): void {
   storageRemove(STORAGE_KEYS.AI_CONFIG)
+}
+
+export function getProjects(): Project[] {
+  const projects = storageGet<Project[]>(STORAGE_KEYS.PROJECTS, [])
+  return projects.map((proj) => ({
+    ...proj,
+    createdAt: new Date(proj.createdAt),
+    updatedAt: new Date(proj.updatedAt),
+    deadline: proj.deadline ? new Date(proj.deadline) : undefined,
+    completedAt: proj.completedAt ? new Date(proj.completedAt) : undefined,
+    tasks: (proj.tasks || []).map((task) => ({
+      ...task,
+      createdAt: new Date(task.createdAt),
+      updatedAt: new Date(task.updatedAt),
+      dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+      completedAt: task.completedAt ? new Date(task.completedAt) : undefined,
+    })),
+  }))
+}
+
+export function saveProjects(projects: Project[]): void {
+  storageSet(STORAGE_KEYS.PROJECTS, projects)
+}
+
+export function getAchievements(): Achievement[] {
+  const achievements = storageGet<Achievement[]>(STORAGE_KEYS.ACHIEVEMENTS, [])
+  return achievements.map((ach) => ({
+    ...ach,
+    unlockedAt: new Date(ach.unlockedAt),
+  }))
+}
+
+export function saveAchievements(achievements: Achievement[]): void {
+  storageSet(STORAGE_KEYS.ACHIEVEMENTS, achievements)
 }
