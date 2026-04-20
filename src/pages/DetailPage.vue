@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useInspiration } from '@/composables/useInspiration'
 import { useAI } from '@/composables/useAI'
@@ -21,7 +21,8 @@ const {
   addAttachmentToInspiration,
   deleteAttachmentFromInspiration,
   addAttachmentToSupplement,
-  deleteAttachmentFromSupplement
+  deleteAttachmentFromSupplement,
+  updateInspiration
 } = useInspiration()
 const { aiConfig, setConfig, testModel, analyzeFeasibility, chatWithAI } = useAI()
 
@@ -53,6 +54,42 @@ const aiApiUrl = ref('')
 
 const newSupplement = ref('')
 const supplementType = ref<Supplement['type']>('note')
+
+// 加载现有的 AI 数据
+function loadExistingData() {
+  const insp = inspiration.value
+  if (insp) {
+    // 加载 AI 分析数据
+    if (insp.aiAnalysis) {
+      // 这里可以设置 AI 分析结果
+    }
+    // 加载 AI 对话数据
+    if (insp.aiConversation) {
+      chatHistory.value = insp.aiConversation
+    }
+  }
+}
+
+// 保存 AI 对话数据
+function saveAiConversation() {
+  const insp = inspiration.value
+  if (insp && chatHistory.value.length > 0) {
+    updateInspiration(insp.id, { aiConversation: chatHistory.value })
+  }
+}
+
+// 保存 AI 分析数据
+function saveAiAnalysis() {
+  const insp = inspiration.value
+  if (insp && feasibilityResult.value) {
+    updateInspiration(insp.id, { aiAnalysis: {
+      summary: feasibilityResult.value.analysis,
+      keywords: [],
+      categories: [],
+      suggestions: feasibilityResult.value.suggestions
+    } })
+  }
+}
 
 function goBack() {
   router.back()
@@ -208,7 +245,19 @@ onMounted(() => {
     aiModel.value = aiConfig.value.model || ''
     aiApiUrl.value = aiConfig.value.apiUrl || ''
   }
+  // 加载现有的 AI 数据
+  loadExistingData()
 })
+
+// 监听 AI 对话数据变化，自动保存
+watch(chatHistory, () => {
+  saveAiConversation()
+}, { deep: true })
+
+// 监听 AI 分析结果变化，自动保存
+watch(feasibilityResult, () => {
+  saveAiAnalysis()
+}, { deep: true })
 </script>
 
 <template>

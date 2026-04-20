@@ -18,6 +18,7 @@ export interface Inspiration {
   supplements: Supplement[]
   attachments: Attachment[]
   aiAnalysis?: AIAnalysis
+  aiConversation?: { role: 'user' | 'assistant'; content: string }[]
 }
 
 export interface Supplement {
